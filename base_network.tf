@@ -132,7 +132,7 @@ resource "aws_route_table" "route_table_private" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${element(aws_nat_gateway.nat.*.id, count.index)}"
+    nat_gateway_id = "${element(aws_nat_gateway.nat.*.id, count.index)}"
   }
 
   tags {
