@@ -175,7 +175,7 @@ resource "aws_route_table_association" "public_subnet_assocation" {
 
 ### VPN Gateways
 resource "aws_vpn_gateway" "vpn" {
-  count = "${var.create_vpn}"
+  count = "${var.vpn_gateways}"
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags {
