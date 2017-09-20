@@ -1,3 +1,7 @@
+data "aws_availability_zones" "available" {
+  state = "available"  
+}
+
 ### AWS VPC
 resource "aws_vpc" "vpc" {
   cidr_block           = "${var.vpc_cidr_range}"
@@ -26,9 +30,10 @@ resource "aws_internet_gateway" "internet" {
 ### Private Subnets
 # Loop over this as many times as necessary to create the correct number of Private Subnets
 resource "aws_subnet" "private_subnet" {
-  count      = "${var.availability_zones_count}"
-  vpc_id     = "${aws_vpc.vpc.id}"
-  cidr_block = "${element(var.private_subnets, count.index)}"
+  count             = "${var.availability_zones_count}"
+  vpc_id            = "${aws_vpc.vpc.id}"
+  cidr_block        = "${element(var.private_subnets, count.index)}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
 
   tags {
     Environment = "${var.environment}"
@@ -41,9 +46,10 @@ resource "aws_subnet" "private_subnet" {
 ### Public Subnets
 # Loop over this as many times as necessary to create the correct number of Public Subnets
 resource "aws_subnet" "public_subnet" {
-  count      = "${var.availability_zones_count}"
-  vpc_id     = "${aws_vpc.vpc.id}"
-  cidr_block = "${element(var.public_subnets, count.index)}"
+  count             = "${var.availability_zones_count}"
+  vpc_id            = "${aws_vpc.vpc.id}"
+  cidr_block        = "${element(var.public_subnets, count.index)}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
 
   tags {
     Environment = "${var.environment}"
