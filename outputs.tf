@@ -6,6 +6,10 @@ output "public_subnets" {
   value = ["${aws_subnet.public_subnet.*.id}"]
 }
 
+output "nat_ips" {
+  value = ["${aws_eip.nat_gw_eip.*.id}"]
+}
+
 output "vpc_id" {
   value = "${aws_vpc.vpc.id}"
 }
