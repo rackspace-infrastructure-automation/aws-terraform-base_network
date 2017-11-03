@@ -129,7 +129,8 @@ resource "aws_vpn_gateway" "vpn" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags {
-    Name        = "${format("%s-VPNGateway", var.name)}"
-    Provisioner = "rackspace"
+    "Name"             = "${format("%s-VPNGateway", var.name)}"
+    "Provisioner"      = "rackspace"
+    "transitvpc:spoke" = "${var.transit_vpc}"
   }
 }
