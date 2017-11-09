@@ -72,6 +72,12 @@ resource "aws_nat_gateway" "nat" {
   allocation_id = "${element(aws_eip.nat_gw_eip.*.id, count.index)}"
   count         = "${var.availability_zones_count}"
   subnet_id     = "${element(aws_subnet.public_subnet.*.id, count.index)}"
+
+  tags {
+    Environment = "${var.environment}"
+    Name        = "${format("%s-nat-gateway-az%d", var.name, count.index + 1 )}"
+    Provisioner = "rackspace"
+  }
 }
 
 ### Private Subnet Route Tables
@@ -129,7 +135,8 @@ resource "aws_vpn_gateway" "vpn" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags {
-    Name        = "${format("%s-VPNGateway", var.name)}"
-    Provisioner = "rackspace"
+    "Name"             = "${format("%s-VPNGateway", var.name)}"
+    "Provisioner"      = "rackspace"
+    "transitvpc:spoke" = "${var.transit_vpc}"
   }
 }

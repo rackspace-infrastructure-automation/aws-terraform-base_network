@@ -50,3 +50,9 @@ variable "vpn_gateways" {
   default     = "0"
   description = "Number of VPN Gateways to provision"
 }
+
+# TransitVPC enabled
+variable "transit_vpc" {
+  default     = "false"
+  description = "Enable TransitVPC on this VGW"
+}
