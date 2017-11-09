@@ -3,7 +3,7 @@
 ## Usage
 ```hcl
 module "base_network" {
-  source = "git@github.com:rackspace-infrastructure-automation/rackspace-aws-terraform//base_network"
+  source = "git@github.com:rackspace-infrastructure-automation/aws-terraform-base_network"
 
   environment = "REQUIRED_EDIT_ME"
   name = "REQUIRED_EDIT_ME"
