@@ -13,3 +13,13 @@ output "nat_ips" {
 output "vpc_id" {
   value = "${aws_vpc.vpc.id}"
 }
+
+output "public_route_table_ids" {
+  description = "List of IDs of public route tables"
+  value       = ["${aws_route_table.route_table_public.*.id}"]
+}
+
+output "private_route_table_ids" {
+  description = "List of IDs of private route tables"
+  value       = ["${aws_route_table.route_table_private.*.id}"]
+}
