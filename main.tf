@@ -86,16 +86,17 @@ resource "aws_route_table" "route_table_private" {
   count  = "${var.availability_zones_count}"
   vpc_id = "${aws_vpc.vpc.id}"
 
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = "${element(aws_nat_gateway.nat.*.id, count.index)}"
-  }
-
   tags {
     Environment = "${var.environment}"
     Name        = "${format("%s-PrivateRT-AZ%d", var.name, count.index +1)}"
     Provisioner = "rackspace"
   }
+}
+
+resource "aws_route" "default_private_route" {
+  route_table_id         = "${element(aws_route_table.route_table_private.*.id, count.index)}"
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = "${element(aws_nat_gateway.nat.*.id, count.index)}"
 }
 
 ### Private Subnet Route Table Associations
@@ -110,16 +111,17 @@ resource "aws_route_table_association" "private_subnet_assocation" {
 resource "aws_route_table" "route_table_public" {
   vpc_id = "${aws_vpc.vpc.id}"
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.internet.id}"
-  }
-
   tags {
     Environment = "${var.environment}"
     Name        = "${format("%s-PublicRT", var.name)}"
     Provisioner = "rackspace"
   }
+}
+
+resource "aws_route" "default_public_route" {
+  route_table_id         = "${element(aws_route_table.route_table_public.*.id, count.index)}"
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = "${element(aws_internet_gateway.internet.*.id, count.index)}"
 }
 
 ### Public Route Table Associations
