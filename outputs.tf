@@ -23,3 +23,8 @@ output "private_route_table_ids" {
   description = "List of IDs of private route tables"
   value       = ["${aws_route_table.route_table_private.*.id}"]
 }
+
+output "vpn_gateway_ids" {
+  description = "List of IDs of VPN gateways"
+  value       = ["${aws_vpn_gateway.vpn.*.id}"]
+}
