@@ -62,7 +62,7 @@ resource "aws_subnet" "public_subnet" {
 ### Elastic IPs
 # Need one per AZ for the NAT Gateways
 resource "aws_eip" "nat_gw_eip" {
-  count = "${ var.nat_gateways ? 0 :var.availability_zones_count}"
+  count = "${ var.nat_gateways ? var.availability_zones_count : 0}"
   vpc   = true
 }
 
@@ -70,7 +70,7 @@ resource "aws_eip" "nat_gw_eip" {
 # Loops as necessary to create one per AZ in the Public Subnets, and associate the provisioned Elastic IP
 resource "aws_nat_gateway" "nat" {
   allocation_id = "${element(aws_eip.nat_gw_eip.*.id, count.index)}"
-  count         = "${ var.nat_gateways ? 0 :var.availability_zones_count}"
+  count         = "${ var.nat_gateways ? var.availability_zones_count : 0}"
   subnet_id     = "${element(aws_subnet.public_subnet.*.id, count.index)}"
 
   tags {
