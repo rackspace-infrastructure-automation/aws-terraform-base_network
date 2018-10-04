@@ -56,3 +56,9 @@ variable "transit_vpc" {
   default     = "false"
   description = "Enable TransitVPC on this VGW"
 }
+
+# NAT Gateways
+variable "nat_gateways" {
+  default     = "true"
+  description = "Boolean: Set whether or not NAT Gateways are provisioned for private subnets."
+}

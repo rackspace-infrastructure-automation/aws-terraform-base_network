@@ -15,3 +15,32 @@ module "base_network" {
   vpn_gateways = "0"
 }
 ```
+
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| availability_zones_count | Number of Availability Zones to use | string | `2` | no |
+| environment | The Environment this VPC is being deployed into (prod, dev, test, etc) | string | - | yes |
+| instance_tenancy | VPC Instance Tenancy (single tenant - dedicated, multi-tenancy - default) | string | `default` | no |
+| name | The name of the VPC | string | - | yes |
+| nat_gateways | Boolean: Set whether or not NAT Gateways are provisioned for private subnets. | string | `true` | no |
+| private_subnets | IP Address Ranges in CIDR Notation for Private Subnets in AZ 1-3. | list | `<list>` | no |
+| public_subnets | IP Address Ranges in CIDR Notation for Public Subnets in AZ1-3. | list | `<list>` | no |
+| transit_vpc | Enable TransitVPC on this VGW | string | `false` | no |
+| vpc_cidr_range | The IP Address space used for the VPC in CIDR notation. | string | `172.18.0.0/16` | no |
+| vpn_gateways | Number of VPN Gateways to provision | string | `0` | no |
+
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| nat_ips |  |
+| private_route_table_ids | List of IDs of private route tables |
+| private_subnets |  |
+| public_route_table_ids | List of IDs of public route tables |
+| public_subnets |  |
+| vpc_id |  |
+| vpn_gateway_ids | List of IDs of VPN gateways |
