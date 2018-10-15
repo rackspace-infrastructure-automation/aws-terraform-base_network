@@ -2,6 +2,13 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+locals {
+  tags = {
+    Provisioner = "rackspace"
+    Environment = "${var.environment}"
+  }
+}
+
 ### AWS VPC
 resource "aws_vpc" "vpc" {
   cidr_block           = "${var.vpc_cidr_range}"
@@ -9,22 +16,22 @@ resource "aws_vpc" "vpc" {
   enable_dns_support   = "true"
   enable_dns_hostnames = "true"
 
-  tags {
-    Environment = "${var.environment}"
-    Provisioner = "rackspace"
-    Name        = "${var.name}"
-  }
+  tags = "${merge(
+    map("Name", "${var.name}"),
+    local.tags,
+    var.additional_tags
+  )}"
 }
 
 ### Internet Gateway
 resource "aws_internet_gateway" "internet" {
   vpc_id = "${aws_vpc.vpc.id}"
 
-  tags {
-    Environment = "${var.environment}"
-    Name        = "${var.name}-IGW"
-    Provisioner = "rackspace"
-  }
+  tags = "${merge(
+    map("Name", "${var.name}-IGW"),
+    local.tags,
+    var.additional_tags
+  )}"
 }
 
 ### Private Subnets
@@ -35,12 +42,11 @@ resource "aws_subnet" "private_subnet" {
   cidr_block        = "${element(var.private_subnets, count.index)}"
   availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
 
-  tags {
-    Environment = "${var.environment}"
-    Name        = "${format("%s-private-subnet-az%d", var.name, count.index + 1)}"
-    Network     = "private"
-    Provisioner = "rackspace"
-  }
+  tags = "${merge(
+    map("Name", "${format("%s-private-subnet-az%d", var.name, count.index + 1)}", "Network", "private"),
+    local.tags,
+    var.additional_tags
+  )}"
 }
 
 ### Public Subnets
@@ -51,12 +57,11 @@ resource "aws_subnet" "public_subnet" {
   cidr_block        = "${element(var.public_subnets, count.index)}"
   availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
 
-  tags {
-    Environment = "${var.environment}"
-    Name        = "${format("%s-public-subnet-az%d", var.name, count.index + 1 )}"
-    Network     = "public"
-    Provisioner = "rackspace"
-  }
+  tags = "${merge(
+    map("Name", "${format("%s-public-subnet-az%d", var.name, count.index + 1 )}", "Network", "public"),
+    local.tags,
+    var.additional_tags
+  )}"
 }
 
 ### Elastic IPs
@@ -73,11 +78,11 @@ resource "aws_nat_gateway" "nat" {
   count         = "${var.availability_zones_count}"
   subnet_id     = "${element(aws_subnet.public_subnet.*.id, count.index)}"
 
-  tags {
-    Environment = "${var.environment}"
-    Name        = "${format("%s-nat-gateway-az%d", var.name, count.index + 1 )}"
-    Provisioner = "rackspace"
-  }
+  tags = "${merge(
+    map("Name", "${format("%s-nat-gateway-az%d", var.name, count.index + 1 )}"),
+    local.tags,
+    var.additional_tags
+  )}"
 }
 
 ### Private Subnet Route Tables
@@ -86,11 +91,11 @@ resource "aws_route_table" "route_table_private" {
   count  = "${var.availability_zones_count}"
   vpc_id = "${aws_vpc.vpc.id}"
 
-  tags {
-    Environment = "${var.environment}"
-    Name        = "${format("%s-PrivateRT-AZ%d", var.name, count.index +1)}"
-    Provisioner = "rackspace"
-  }
+  tags = "${merge(
+    map("Name", "${format("%s-PrivateRT-AZ%d", var.name, count.index +1)}"),
+    local.tags,
+    var.additional_tags
+  )}"
 }
 
 resource "aws_route" "default_private_route" {
@@ -111,11 +116,11 @@ resource "aws_route_table_association" "private_subnet_assocation" {
 resource "aws_route_table" "route_table_public" {
   vpc_id = "${aws_vpc.vpc.id}"
 
-  tags {
-    Environment = "${var.environment}"
-    Name        = "${format("%s-PublicRT", var.name)}"
-    Provisioner = "rackspace"
-  }
+  tags = "${merge(
+    map("Name", "${format("%s-PublicRT", var.name)}"),
+    local.tags,
+    var.additional_tags
+  )}"
 }
 
 resource "aws_route" "default_public_route" {
@@ -136,9 +141,9 @@ resource "aws_vpn_gateway" "vpn" {
   count  = "${var.vpn_gateways}"
   vpc_id = "${aws_vpc.vpc.id}"
 
-  tags {
-    "Name"             = "${format("%s-VPNGateway", var.name)}"
-    "Provisioner"      = "rackspace"
-    "transitvpc:spoke" = "${var.transit_vpc}"
-  }
+  # Does not include local variable 'tags', which includes the 'Environment' tag
+  tags = "${merge(
+    map("Name", "${format("%s-VPNGateway", var.name)}", "transitvpc:spoke", "${var.transit_vpc}", "Provisioner", "rackspace"),
+    var.additional_tags
+  )}"
 }

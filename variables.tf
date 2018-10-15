@@ -56,3 +56,10 @@ variable "transit_vpc" {
   default     = "false"
   description = "Enable TransitVPC on this VGW"
 }
+
+# VPC Tagging
+variable "additional_tags" {
+  description = "Additional tags to be added to the VPC."
+  type        = "map"
+  default     = {}
+}
