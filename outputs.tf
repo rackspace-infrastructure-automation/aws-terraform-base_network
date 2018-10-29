@@ -28,3 +28,8 @@ output "vpn_gateway_ids" {
   description = "List of IDs of VPN gateways"
   value       = ["${aws_vpn_gateway.vpn.*.id}"]
 }
+
+output "internet_gateway_ids" {
+  description = "List of IDs of internet gateways"
+  value       = ["${aws_internet_gateway.internet.*.id}"]
+}
